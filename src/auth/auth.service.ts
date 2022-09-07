@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDTO, SignUpDTO } from './dto';
 import * as bcrypt from 'bcrypt';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable({})
 export class AuthService {
@@ -11,20 +12,28 @@ export class AuthService {
     // hash password
     const hash = await bcrypt.hash(dto.password, 10);
 
-    // create user
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        hash,
-      },
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-      },
-    });
+    try {
+      // create user
+      const user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          hash,
+        },
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+        },
+      });
 
-    return user;
+      return user;
+    } catch (err) {
+      if (err instanceof PrismaClientKnownRequestError) {
+        if (err.code === 'P2002') {
+          throw new ForbiddenException('Email is already Taken');
+        }
+      }
+    }
   }
 
   signin(dto: SignInDTO) {
