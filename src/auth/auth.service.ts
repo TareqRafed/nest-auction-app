@@ -2,7 +2,10 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDTO, SignUpDTO } from './dto';
 import * as bcrypt from 'bcrypt';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import {
+  NotFoundError,
+  PrismaClientKnownRequestError,
+} from '@prisma/client/runtime';
 
 @Injectable({})
 export class AuthService {
@@ -36,7 +39,29 @@ export class AuthService {
     }
   }
 
-  signin(dto: SignInDTO) {
-    return { msg: 'I have signed up' };
+  async signin(dto: SignInDTO) {
+    try {
+      // find user
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: {
+          email: dto.email,
+        },
+      });
+
+      // check password
+      const pwMatches = await bcrypt.compare(dto.password, user.hash);
+
+      if (!pwMatches) throw new ForbiddenException('Password incorrect');
+
+      delete user.hash;
+      return user;
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        throw new ForbiddenException('Email is incorrect');
+      }
+      if (err instanceof ForbiddenException) {
+        throw err;
+      }
+    }
   }
 }
