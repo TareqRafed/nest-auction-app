@@ -75,7 +75,46 @@ export class AuthService {
     }
   }
 
+  async signout(userId) {
+    this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        rt: {
+          not: null,
+        },
+      },
+      data: {
+        rt: null,
+      },
+    });
+  }
+
   // Tokens
+  /**
+   * Creates new AT & RT, stores the new hashed RT in Database,
+   * then returns the tokens unhahsed
+   * @param userId
+   * @param rt : Refresh Token
+   * @returns Tokens
+   */
+  async refreshToken(userId: number, rt: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    // False data is passed
+    if (!user) throw new ForbiddenException('Access Denied');
+    const hash = await bcrypt.compare(rt, user.rt);
+    if (!hash) throw new ForbiddenException('Access Denied');
+
+    // Refresh token
+    const tokens = await this.generateTokens(userId, user.email);
+    this.updateRtHash(userId, tokens.rt);
+
+    return tokens;
+  }
 
   /**
    * Store the refresh token has in the database, for a specific user

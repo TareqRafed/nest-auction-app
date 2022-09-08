@@ -1,4 +1,15 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+  Headers,
+} from '@nestjs/common';
+import { GetUser } from 'src/common/decorators';
+import { RtGuard } from 'src/common/guards';
+import { AtGuard } from 'src/common/guards/at.guard';
 import { AuthService } from './auth.service';
 import { SignUpDTO } from './dto';
 import { SignInDTO } from './dto/signin.dto';
@@ -12,7 +23,26 @@ export class AuthController {
   }
 
   @Post('signin')
+  @HttpCode(HttpStatus.OK)
   signin(@Body() dto: SignInDTO) {
     return this.authService.signin(dto);
+  }
+
+  /**
+   * invoke signout service; uses POST instead of GET, because that browsers do prefetching for GET requests
+   */
+  @Post('signout')
+  @UseGuards(AtGuard)
+  signout(@GetUser('id') userId: number) {
+    return this.authService.signout(userId);
+  }
+
+  @Post('refresh')
+  @UseGuards(RtGuard)
+  refreshTokens(
+    @GetUser('id') userId: number,
+    @GetUser('refreshToken') token: string,
+  ) {
+    return this.authService.refreshToken(userId, token);
   }
 }
