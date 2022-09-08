@@ -56,11 +56,8 @@ export class AuthService {
       delete user.hash;
       return user;
     } catch (err) {
-      if (err instanceof NotFoundError) {
-        throw new ForbiddenException('Email is incorrect');
-      }
-      if (err instanceof ForbiddenException) {
-        throw err;
+      if (err instanceof NotFoundError || err instanceof ForbiddenException) {
+        throw new ForbiddenException('Email or Password is incorrect');
       }
     }
   }
