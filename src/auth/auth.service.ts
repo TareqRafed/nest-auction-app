@@ -75,7 +75,7 @@ export class AuthService {
     }
   }
 
-  async signout(userId) {
+  async signout(userId: number) {
     this.prisma.user.updateMany({
       where: {
         id: userId,
@@ -90,6 +90,7 @@ export class AuthService {
   }
 
   // Tokens
+  // TODO: Refactor Tokens logic into a Feature module
   /**
    * Creates new AT & RT, stores the new hashed RT in Database,
    * then returns the tokens unhahsed

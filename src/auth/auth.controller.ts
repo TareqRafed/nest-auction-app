@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Post,
   UseGuards,
-  Headers,
 } from '@nestjs/common';
 import { GetUser } from 'src/common/decorators';
 import { RtGuard } from 'src/common/guards';
