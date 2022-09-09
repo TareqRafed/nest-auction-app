@@ -1,8 +1,8 @@
 
 version: '3.8'
 services:
-  db:
-    container_name: db-mazad
+  dev-db:
+    container_name: db-mazad-dev
     image: postgres:14.1-alpine
     restart: always
     environment:
@@ -11,6 +11,19 @@ services:
       - POSTGRES_DB=db
     ports:
       - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+  
+  test-db:
+    container_name: db-mazad-test
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    ports:
+      - '5433:5432'
     volumes: 
       - db:/var/lib/postgresql/data
 volumes:

@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignInDTO, SignUpDTO } from './dto';
 import * as bcrypt from 'bcrypt';
@@ -45,6 +49,7 @@ export class AuthService {
           throw new ForbiddenException('Email is already Taken');
         }
       }
+      throw new InternalServerErrorException();
     }
   }
 
@@ -72,6 +77,7 @@ export class AuthService {
       if (err instanceof NotFoundError || err instanceof ForbiddenException) {
         throw new ForbiddenException('Email or Password is incorrect');
       }
+      throw new InternalServerErrorException();
     }
   }
 
