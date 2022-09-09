@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { GetUser } from 'src/common/decorators';
-import { AtGuard } from 'src/common/guards';
+import { GetUser } from '../common/decorators';
+import { AtGuard } from '../common/guards';
 import { ItemsDTO } from './dto/items.dto';
 import { ItemsService } from './items.service';
 

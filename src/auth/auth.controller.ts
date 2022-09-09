@@ -6,9 +6,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/common/decorators';
-import { RtGuard } from 'src/common/guards';
-import { AtGuard } from 'src/common/guards/at.guard';
+import { GetUser } from '../common/decorators';
+import { RtGuard } from '../common/guards';
+import { AtGuard } from '../common/guards/at.guard';
 import { AuthService } from './auth.service';
 import { SignUpDTO } from './dto';
 import { SignInDTO } from './dto/signin.dto';
