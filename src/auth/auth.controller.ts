@@ -32,6 +32,7 @@ export class AuthController {
    */
   @Post('signout')
   @UseGuards(AtGuard)
+  @HttpCode(HttpStatus.OK)
   signout(@GetUser('id') userId: number) {
     return this.authService.signout(userId);
   }

@@ -11,14 +11,21 @@ import {
   PrismaClientKnownRequestError,
 } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
+import { createHash } from 'crypto';
 
 @Injectable({})
 export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   // Basic services
+
+  /**
+   * Hashes the first 72 bytes of a string
+   * @param str
+   * @returns string
+   */
   async hash(str: string) {
-    return await bcrypt.hash(str, 10);
+    return bcrypt.hash(str, 10);
   }
 
   async signup(dto: SignUpDTO) {
@@ -82,7 +89,7 @@ export class AuthService {
   }
 
   async signout(userId: number) {
-    this.prisma.user.updateMany({
+    await this.prisma.user.updateMany({
       where: {
         id: userId,
         rt: {
@@ -113,12 +120,13 @@ export class AuthService {
 
     // False data is passed
     if (!user) throw new ForbiddenException('Access Denied');
-    const hash = await bcrypt.compare(rt, user.rt);
+    const sha256 = createHash('sha256').update(rt).digest('hex');
+    const hash = await bcrypt.compare(sha256, user.rt);
     if (!hash) throw new ForbiddenException('Access Denied');
-
+    //console.log(sha256, user.rt, 'new rt', rt);
     // Refresh token
     const tokens = await this.generateTokens(userId, user.email);
-    this.updateRtHash(userId, tokens.rt);
+    await this.updateRtHash(userId, tokens.rt);
 
     return tokens;
   }
@@ -129,7 +137,9 @@ export class AuthService {
    * @param rt : Refresh Token
    */
   async updateRtHash(userId: number, rt: string) {
-    const hash = await this.hash(rt);
+    // because bcrypt hashes only the first 72 bytes
+    const sha256 = createHash('sha256').update(rt).digest('hex');
+    const hash = await this.hash(sha256);
     await this.prisma.user.update({
       where: {
         id: userId,
