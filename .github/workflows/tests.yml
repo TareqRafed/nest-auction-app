@@ -49,6 +49,11 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Run database container
+        run: |
+          yarn run:db:test
+          yarn prisma:deploy:test
+
       # Run tests
-      - name: Run tests
+      - name: Run unit tests
         run: yarn test

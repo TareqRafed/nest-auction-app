@@ -37,4 +37,4 @@ lerna-debug.log*
 #env
 *.swp
 .dev.env
-.test.env
+.env
