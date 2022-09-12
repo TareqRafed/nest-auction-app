@@ -31,7 +31,8 @@
     "run:db:test": "docker compose up test-db -d",
     "shut:db:test": "docker compose down test-db -v",
     "restart:db:test": "yarn shut:db:test && yarn run:db:test && sleep 1 && yarn prisma:deploy:test",
-    "commit": "cz"
+    "commit": "cz",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
