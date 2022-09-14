@@ -9,3 +9,10 @@ export class SignInDTO {
   @IsNotEmpty()
   password: string;
 }
+
+export const signInDtoStub = () => {
+  return {
+    email: 'testemail@test.com',
+    password: 'QWERTqwert123@',
+  };
+};

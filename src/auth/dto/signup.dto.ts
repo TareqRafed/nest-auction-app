@@ -21,3 +21,10 @@ export class SignUpDTO {
   })
   password: string;
 }
+
+export const signUpDtoStub = () => {
+  return {
+    email: 'testemail@test.com',
+    password: 'QWERTqwert123@',
+  };
+};
