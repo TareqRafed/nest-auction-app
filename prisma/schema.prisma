@@ -19,8 +19,8 @@ model User {
   hash  String
   rt    String?
 
-  firstName String?
-  lastName  String?
+  forename String?
+  surename  String?
 
   items Item[]
 
